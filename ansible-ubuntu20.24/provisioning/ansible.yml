@@ -1,0 +1,21 @@
+- name: my ansible start
+  hosts: vagrant
+  gather_facts: no
+  become: yes
+  pre_tasks:
+    - name: set locale
+      shell: localectl set-locale LANG=ja_JP.utf8
+    - name: set timezone to Asia/Tokyo
+      timezone:
+        name: Asia/Tokyo
+  tasks:
+    - name: apt update
+      apt: update_cache=yes
+    - name: install git
+      apt:
+        name:
+          - git
+          - build-essential
+          - iproute2
+          - iputils-ping
+          - netcat-openbsd
