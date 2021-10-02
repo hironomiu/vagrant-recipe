@@ -1,0 +1,48 @@
+- name: my ansible start
+  hosts: vagrant
+  gather_facts: no
+  become: yes
+  pre_tasks:
+    - name: set locale
+      shell: localectl set-locale LANG=ja_JP.utf8
+    - name: set timezone to Asia/Tokyo
+      timezone:
+        name: Asia/Tokyo
+  tasks:
+    - name: apt update
+      apt: update_cache=yes
+    - name: install package
+      apt:
+        name:
+          - git
+          - nginx 
+          - fcgiwrap 
+          - apache2-utils 
+          - unzip
+          - python3-pip
+    - name: create git directory
+      file: path=/var/www/html/git state=directory owner=www-data group=www-data mode=0755
+    - name: create gituser.git directory
+      file: path=/var/www/html/git/gituser.git state=directory owner=www-data group=www-data mode=0755
+    - name: git init --bare
+      shell: git init --bare --shared=group /var/www/html/git/gituser.git
+    - name: chown
+      shell: chown -R www-data:www-data /var/www/html/git
+    - name: chmod
+      shell: chmod -R 755 /var/www/html/git
+    - name: "python-passlib installed"
+      pip:
+        name: passlib
+    - name: htpasswd
+      htpasswd:
+        path: /var/www/html/git/htpasswd
+        name: gituser
+        password: hoge
+        owner: root
+        group: root
+        mode: 0644
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=restarted
+    - name: restart fcgiwrap
+      service: name=fcgiwrap state=restarted
