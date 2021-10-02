@@ -1,5 +1,9 @@
 # ubuntu-20.04-nginx
 
+192.168.56.30 で作成
+
+BASIC 認証のパスワードは`hoge`を設定
+
 `/etc/nginx/conf.d/git.conf`を作成
 
 ```
